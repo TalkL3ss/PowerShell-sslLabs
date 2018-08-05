@@ -1,4 +1,4 @@
-$siteToCheck = "Digital.isracard.co.il","www1.isracard.co.il","www.tzm.co.il"
+$siteToCheck = "site1.com","site.co.il","www.site.co.il"
 $alljobs        = $true
 $fistLine    = $true
  
