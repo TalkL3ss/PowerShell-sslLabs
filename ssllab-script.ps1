@@ -1,6 +1,15 @@
-$siteToCheck = "site1.com","site.co.il","www.site.co.il"
+$siteToCheck    = "site.co.il","www.site.co.il","site.com"
 $alljobs        = $true
-$fistLine    = $true
+$fistLine       = $true
+$logPath        = "c:\temp\1.csv"
+
+New-Item -Path $logPath -Force -ItemType File
+
+Function WriteLog($line)
+{
+     Add-Content -Path $logPath -Value $line 
+} 
+
  
 Function AsyncJobs([array]$siteADDRs) {
 $sb = { param($site)
@@ -10,13 +19,13 @@ $sb = { param($site)
         $results = Invoke-WebRequest -Uri $fullSite | ConvertFrom-Json 
         While ($results.status -ne "READY" -and $results.status -ne "ERROR" )
         {
-            sleep 30
+            Start-Sleep -Seconds (Get-Random -Minimum 30 -Maximum 60) 
             $results = Invoke-WebRequest -Uri $fullSite | ConvertFrom-Json 
         }
-        (($results | select endpoints).endpoints) | ft @{Label="Site_Address"; exp={$site}},grade,ipAddress }
+        $results | select -ExpandProperty endpoints | select @{Label="Site_Address"; exp={$site}},grade,ipAddress }
 
     ForEach ($site in $siteADDRs) {
-        Start-Job -Name $site -ScriptBlock $sb -ArgumentList $site 
+        Start-Job -Name $site -ScriptBlock $sb -ArgumentList $site | out-null
         }
 } 
 
@@ -27,21 +36,12 @@ While ($alljobs -eq $true) {
     foreach ($job in $ourJobs) {
         $jobResults   = $null
         Switch ($job.State) {
-         {$_ -eq 'Running'} {
-            } 
          {$_ -eq 'Completed'} {
-                $jobResults = Receive-Job -id $job.id 
-                if ($fistLine -eq $true) {  
-                     Write-Host "first" + $fistLine + ($jobResults | Out-String)
-                      $fistLine = $false
-                 } else { 
-                    Write-Host "else" + $fistLine +  ($jobResults | Out-String)
-                 }
-                 Remove-Job -id $job.id
+                $jobResults = Receive-Job -id $job.id | Export-Csv -Path $logPath -Append -NoTypeInformation
+                Remove-Job $job.Id -Force
             }
           {$_ -eq 'Failed'} {
            }
-
 
         }      
     } 
