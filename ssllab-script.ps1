@@ -1,6 +1,5 @@
 $siteToCheck    = "site.co.il","www.site.co.il","site.com"
 $alljobs        = $true
-$fistLine       = $true
 $logPath        = "c:\temp\1.csv"
 
 New-Item -Path $logPath -Force -ItemType File
@@ -19,6 +18,8 @@ $sb = { param($site)
         $results = Invoke-WebRequest -Uri $fullSite | ConvertFrom-Json 
         While ($results.status -ne "READY" -and $results.status -ne "ERROR" )
         {
+            $siteParams = '&publish=off&fromCache=on&startNew=off&all=done'
+            $fullSite =  [string]::Format( "{0}{1}{2}",$baseSite,$site,$siteParams) 
             Start-Sleep -Seconds (Get-Random -Minimum 30 -Maximum 60) 
             $results = Invoke-WebRequest -Uri $fullSite | ConvertFrom-Json 
         }
@@ -52,4 +53,3 @@ While ($alljobs -eq $true) {
 
     Start-Sleep -Seconds 10
 
-}
