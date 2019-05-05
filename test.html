@@ -1,0 +1,23 @@
+<html>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<body>
+Sorry The Latest update is of the 05/02/2019 07:33:55
+<table id="tip" style="background-color: yellow; margin-left: auto; margin-right: auto; width: 281px; display: none;" border="1">
+<tbody>
+<tr>
+<td style="width: 277px;"><span style="color: red;"><div></div></span></td>
+</tr>
+</tbody>
+</table>
+<script>
+	$.getJSON("http://01-sec-scrn02/json",function(result){
+	  $.each(result, function(i, field){
+		$("div").append(field + " ");
+		  });
+		$("#tip").show( "slow", function() { });
+		});
+
+//	setTimeout(function(){window.location.href = 'http://01-sec-scrn02/'}, 3000);
+</script>
+</body>
+</html>
