@@ -69,7 +69,7 @@ param (
     [Parameter(Mandatory=$true,Position=1,ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage="Enter the sites that you want to scan as a list `"a.com`",`"b.com`"")]
     $siteADDRs,
     [string]$Proxy = "http://127.0.0.1:8080",
-    [switch]$UseProxy = $true
+    [switch]$UseProxy = $false
 )
 
  ForEach ($site in $siteADDRs) {
